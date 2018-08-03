@@ -1,12 +1,9 @@
 import {combineReducers} from 'redux' // to combine different reducers
+import partiesReducer from './partiesReducer'
 
-//const reducer = combineReducers({
-//   name: reducer1, --> import it
-//   name2: reducer2 --> import it
-// })
+const reducer = combineReducers({
+  parties: partiesReducer
+})
 
-function dummyReducer(state = {}, action) {
-  return state
-}
 
-export default dummyReducer
+export default reducer

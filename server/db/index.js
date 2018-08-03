@@ -1,15 +1,21 @@
 const db = require('./database')
-const Model1 = require('./models/model1')
-const Model2 = require('./models/model2')
+const Party = require('./models/party')
+const Legislature = require('./models/legislature')
+const Alliance = require('./models/alliance')
+
 
 
 //associtiations
-Model1.hasMany(Model2)
-Model2.belongsTo(Model1)
+
+Alliance.hasMany(Party)
+Party.belongsTo(Alliance, {
+  targetKey: 'name'
+})
 
 
 module.exports = {
   db,
-  Model1,
-  Model2
+  Party,
+  Legislature,
+  Alliance
 }

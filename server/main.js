@@ -1,6 +1,6 @@
-const app = require('./index')
+const app = require('.')
 const PORT = process.env.PORT || 4200 // this can be very useful if you deploy to Heroku!
-const { db } = require('./db/index')
+const { db } = require('./db')
 
 db.sync(
   // { force: true } //drop all the tables

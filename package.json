@@ -1,5 +1,5 @@
 {
-  "name": "boilermaker",
+  "name": "follow-your-politician",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,8 @@
     "start-virtual": "webpack-dev-server",
     "test:server": "mocha tests/server-tests",
     "test:client": "mocha tests/client-tests --require babel-core/register --require tests/client-tests/setup.js",
-    "test": "npm run test:server & npm run test:client"
+    "test": "npm run test:server & npm run test:client",
+    "seed": "node seed.js"
   },
   "author": "",
   "license": "ISC",
