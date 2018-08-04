@@ -25,6 +25,8 @@ class ListOfPoliticians extends Component {
     const { deputies } = this.props;
     return (
       <div>
+      <h2>You elected:</h2>
+      <div>
         {deputies.map(deputy => {
           return (
             <div key={deputy.id}>
@@ -38,7 +40,7 @@ class ListOfPoliticians extends Component {
             </div>
           );
         })}
-        <h1>List of Politicians </h1>
+      </div>
       </div>
     );
   }

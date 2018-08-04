@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import myPoliticians from './myPoliticians'
+import MyPoliticians from './myPoliticians'
 import { loadParties } from '../reducers/partiesReducer'
 
 class Root extends Component {
@@ -11,10 +11,7 @@ class Root extends Component {
   render() {
     return (
       <main>
-        <Switch>
-          <Route path="/" component={myPoliticians} />
-          <Redirect to ='/'/>
-        </Switch>
+        <MyPoliticians />
       </main>
     );
   }

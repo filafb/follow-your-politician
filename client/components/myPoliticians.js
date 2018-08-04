@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
-import ListOfPoliticians from './listOfPoliticians'
+
+import NavBar from './navBar'
 
 const initialState = {
   electoralNumber: '',
@@ -57,7 +58,7 @@ class MyPoliticians extends React.Component {
           </div>
         }{
           electoralNumber.length > 1 &&
-          <ListOfPoliticians allies={allies} votedFor={votedFor} />
+          <NavBar allies={allies} votedFor={votedFor}/>
         }
         </div>
       </div>
