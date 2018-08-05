@@ -28,7 +28,7 @@ class ListOfProjects extends React.Component {
           <div>
           {!this.state.showDetails
             ? null
-            : <Voters pollingId={project.id} />}
+            : <Voters pollingId={project.id} project={project.proposicao.ementa}/>}
         </div>
         </div>
       );

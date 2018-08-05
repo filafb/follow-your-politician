@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server/main.js",
-    "start-dev": "webpack -w & nodemon ./server/main.js",
+    "start-dev": "NODE_ENV='development' webpack -w & nodemon ./server/main.js",
     "start-virtual": "webpack-dev-server",
     "test:server": "mocha tests/server-tests",
     "test:client": "mocha tests/client-tests --require babel-core/register --require tests/client-tests/setup.js",
     "test": "npm run test:server & npm run test:client",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "postinstall": "touch secrets.js"
   },
   "author": "",
   "license": "ISC",
@@ -40,6 +41,7 @@
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "morgan": "^1.9.0",
+    "nodemailer": "^4.6.7",
     "passport": "^0.4.0",
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",

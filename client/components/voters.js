@@ -13,6 +13,7 @@ class Voters extends React.Component {
   constructor() {
     super();
     this.state = initialState;
+    this.handleClick = this.handleClick.bind(this)
   }
 
   async componentDidMount() {
@@ -52,17 +53,37 @@ class Voters extends React.Component {
     });
     this.setState(state)
   }
+
+  async handleClick(event){
+    const emailContent = {
+      project: this.props.project,
+      vote: event.target.name,
+      listDeputies: this.state[event.target.name]
+    }
+    const response = await axios.post('/email', emailContent)
+    if(response.status === 204){
+      console.log('e-mail sent')
+    } else if((response.status === 500)){
+      console.log('email not sent')
+    }
+
+  }
+
   render() {
     return (
       <div>
       <h2>Voted Yes:</h2>
       {this.state.yes.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
+      <button name='yes' onClick={this.handleClick}>Support these votes</button>
       <h2>Voted No:</h2>
       {this.state.no.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
-      <h2>No present:</h2>
+      <button name='no' onClick={this.handleClick}>Support these votes</button>
+      <h2>Absent:</h2>
       {this.state.absent.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
+      <button name='absent' onClick={this.handleClick}>Support these votes</button>
       <h2>Didn't vote:</h2>
       {this.state.abstation.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
+      <button name='abstation' onClick={this.handleClick}>Support these votes</button>
       </div>
     );
   }

@@ -6,6 +6,9 @@ const app = express();
 const session = require('express-session')
 const {db} = require('./db')
 const passport = require('passport')
+const nodemailer = require('nodemailer')
+
+if (process.env.NODE_ENV !== 'production') require('../secrets')
 
 //config to store session
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
@@ -41,6 +44,39 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
+
+app.post('/email', (req, res, next) => {
+  try{
+    let transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      port: 587,
+      secure: false,
+      auth: {
+        user: 'filadelfo.braz@gmail.com',
+        pass: process.env.GOOGLE_PASS
+      }
+    })
+
+    let mailOptions = {
+      from: 'filadelfo.braz@gmail.com',
+      bcc: 'filadelfo.braz@gmail.com',
+      subject: 'I support your vote!',
+      text: `You voted ${req.body.vote} for the project ${req.body.project}. I support it. Thanks`
+    }
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if(error){
+        console.log(error)
+        res.sendStatus(500)
+      } else{
+        console.log('message sent', info.messageId)
+        res.sendStatus(204)
+      }
+    })
+  } catch(err){
+    next(err)
+  }
+})
 
 
 // Handle 500 Errors
