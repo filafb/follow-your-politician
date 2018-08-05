@@ -2,6 +2,7 @@ import React from 'react'
 import ListOfPoliticians from './listOfPoliticians'
 import ProjectsNavBar from './projectsNavBar'
 
+
 const initialState = {
   deputiesView: false,
   projectsView: false
