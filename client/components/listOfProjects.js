@@ -18,14 +18,18 @@ class ListOfProjects extends React.Component {
     const { projects } = this.props;
     return projects.map(project => {
       return (
-        <div key={project.proposicao.id} onClick={this.handleClick}>
+        <div key={project.proposicao.id}>
+        <div  onClick={this.handleClick}>
           <h3>
             Project: {project.proposicao.ementa} Status:{' '}
             {project.aprovada ? 'Approved' : 'Not Approved'}
           </h3>
+          </div>
+          <div>
           {!this.state.showDetails
             ? null
             : <Voters pollingId={project.id} />}
+        </div>
         </div>
       );
     });

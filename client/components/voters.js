@@ -29,7 +29,6 @@ class Voters extends React.Component {
     const data = values.reduce((finalArr, arr) => {
       return [...finalArr, ...arr.data.dados]
     },[])
-    console.log(data)
     let votesArray = data.reduce((obj, el) => {
       obj[el.parlamentar.id] = el.voto;
       return obj;
@@ -42,20 +41,30 @@ class Voters extends React.Component {
     };
     this.props.deputies.forEach(deputy => {
       if (votesArray[deputy.id] === 'Sim') {
-        state.yes.push(deputy.id);
+        state.yes.push(deputy);
       } else if (votesArray[deputy.id] === 'Não') {
-        state.no.push(deputy.id);
+        state.no.push(deputy);
       } else if (votesArray[deputy.id] === 'Abstenção') {
-        state.abstation.push(deputy.id);
+        state.abstation.push(deputy);
       } else if (votesArray[deputy.id] === 'null') {
-        state.absent.push(deputy.id);
+        state.absent.push(deputy);
       }
     });
     this.setState(state)
   }
   render() {
-    console.log(this.state)
-    return <h1>hi</h1>;
+    return (
+      <div>
+      <h2>Voted Yes:</h2>
+      {this.state.yes.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
+      <h2>Voted No:</h2>
+      {this.state.no.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
+      <h2>No present:</h2>
+      {this.state.absent.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
+      <h2>Didn't vote:</h2>
+      {this.state.abstation.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
+      </div>
+    );
   }
 }
 
