@@ -16,6 +16,7 @@ const parties = [
     electoralNumber: 65,
     allianceId: 1,
 
+
   },
   {
     generalId: 36814,

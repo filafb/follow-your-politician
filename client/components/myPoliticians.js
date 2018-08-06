@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import NavBar from './navBar'
 import { TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles'
+import PartyCard from './partyCard'
 
 const initialState = {
   electoralNumber: '',
@@ -71,14 +72,7 @@ class MyPoliticians extends React.Component {
         </form>
         <div>
           {electoralNumber.length > 1 &&
-          <div>
-          <h3> {`Party Name: ${votedFor.shortName} - ${votedFor.name}`} </h3>
-          <h2>Alliance: {alliance ? alliance.name : 'No alliance'} </h2>
-          {alliance && allies.map(alley => {
-            return <span key={alley.id}> {alley.shortName} </span>
-          })
-          }
-          </div>
+          <PartyCard votedFor={votedFor} alliance={alliance} allies={allies} />
         }{
           electoralNumber.length > 1 &&
           <NavBar allies={allies} votedFor={votedFor}/>
