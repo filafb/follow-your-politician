@@ -2,8 +2,19 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { loadDeputies } from '../reducers/deputiesReducer';
+import PoliticianCard from './politicianCard'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+});
 
 class ListOfPoliticians extends Component {
+
   componentDidMount() {
     const { allies, votedFor } = this.props;
     let alliesList = [];
@@ -25,21 +36,16 @@ class ListOfPoliticians extends Component {
     const { deputies } = this.props;
     return (
       <div>
-      <h2>You elected:</h2>
-      <div>
-        {deputies.map(deputy => {
+      <div className='row'>
+      {
+        !deputies.length ? <CircularProgress className={this.props.classes.progress}/> :
+        deputies.map(deputy => {
           return (
-            <div key={deputy.id}>
-              <div>
-                <img src={deputy.urlFoto} alt="image" />
-              </div>
-              <div>
-                <h3>{deputy.nome}</h3>
-                <h2>{deputy.siglaPartido}</h2>
-              </div>
-            </div>
+            <PoliticianCard key={deputy.id} deputy={deputy} />
           );
-        })}
+        })
+
+      }
       </div>
       </div>
     );
@@ -58,9 +64,13 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
+ListOfPoliticians.propTypes ={
+  classes: PropTypes.object.isRequired
+}
+
 export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(ListOfPoliticians)
+  )(withStyles(styles)(ListOfPoliticians))
 );

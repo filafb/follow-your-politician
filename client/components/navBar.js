@@ -1,11 +1,15 @@
 import React from 'react'
 import ListOfPoliticians from './listOfPoliticians'
-import ProjectsNavBar from './projectsNavBar'
+import BottomNav from './bottomNav'
+import VotedProjects from './VotedProjects'
+import ToBeVotedProjects from './ToBeVotedProjects'
+
 
 
 const initialState = {
   deputiesView: false,
-  projectsView: false
+  projectsView: false,
+  projectStatus: ""
 }
 
 
@@ -23,26 +27,27 @@ class NavBar extends React.Component {
       projectsView: false
     })
   }
-  handleClickProjects(){
+  handleClickProjects(name){
     this.setState({
       deputiesView: false,
-      projectsView: true
+      projectsView: true,
+      projectStatus: name
     })
   }
 
   render(){
     return (
       <div>
-      <header>
-          <h3 onClick={this.handleClickDeputies}>You Elected</h3>
-          <h3 onClick={this.handleClickProjects}>Projects</h3>
-      </header>
+        <BottomNav clickDeputies={this.handleClickDeputies} clickProjects={this.handleClickProjects} />
       <div>
       {this.state.deputiesView &&
         <ListOfPoliticians {...this.props} />
       }
-      {this.state.projectsView &&
-        <ProjectsNavBar />
+      {this.state.projectStatus === 'voted' &&
+        <VotedProjects />
+      }
+      {this.state.projectStatus === 'toBeVoted' &&
+        <ToBeVotedProjects />
       }
       </div>
       </div>

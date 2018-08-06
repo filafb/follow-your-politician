@@ -1,12 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
-
+import PropTypes from 'prop-types'
 import NavBar from './navBar'
+import { TextField } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles'
 
 const initialState = {
   electoralNumber: '',
 };
+
+const styles = theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginLeft: '50px'
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+  menu: {
+    width: 200,
+  },
+});
 
 class MyPoliticians extends React.Component {
   constructor() {
@@ -24,7 +42,7 @@ class MyPoliticians extends React.Component {
 
   render() {
     const { electoralNumber } = this.state
-    const { list, alliances } = this.props
+    const { list, alliances, classes } = this.props
     const [votedFor] = list.filter(party => {
       return party.electoralNumber === Number(electoralNumber.substring(0,2))
     })
@@ -39,14 +57,19 @@ class MyPoliticians extends React.Component {
     }
     return (
       <div>
-        <input
-          type="text"
+        <form className={classes.container} noValidate autoComplete="off">
+        <TextField
+          id='with-placeholder'
+          label='You voted'
+          placeholder='CandidateNumber'
+          className={classes.textFiled}
+          margin='normal'
           name="electoralNumber"
           value={this.state.electoralNumber}
           onChange={this.handleChange}
         />
+        </form>
         <div>
-          <h3>You voted for:</h3>
           {electoralNumber.length > 1 &&
           <div>
           <h3> {`Party Name: ${votedFor.shortName} - ${votedFor.name}`} </h3>
@@ -73,4 +96,8 @@ const mapStateToProps = state => {
   }
 }
 
-export default withRouter(connect(mapStateToProps)(MyPoliticians));
+MyPoliticians.propTypes = {
+  classes: PropTypes.object.isRequired
+}
+
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(MyPoliticians)));

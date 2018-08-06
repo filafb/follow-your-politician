@@ -1,6 +1,7 @@
 import React from 'react'
 import VotedProjects from './VotedProjects'
 import ToBeVotedProjects from './ToBeVotedProjects'
+import { withRouter } from 'react-router-dom'
 
 const initialState = {
   voted: false,
@@ -12,18 +13,15 @@ class ProjectsNavBar extends React.Component {
   constructor(){
     super()
     this.state = initialState;
-    this.handleClickVoted = this.handleClickVoted.bind(this)
-    this.handleClickToBeVoted = this.handleClickToBeVoted.bind(this)
   }
 
-  handleClickVoted(){
-    this.setState({
+  componentDidMount(){
+    this.props.projectStatus === 'voted'
+    ? this.setState({
       voted: true,
       toBeVoted: false
     })
-  }
-  handleClickToBeVoted(){
-    this.setState({
+    : this.setState({
       voted: false,
       toBeVoted: true
     })
@@ -32,11 +30,6 @@ class ProjectsNavBar extends React.Component {
   render(){
     return (
       <div>
-      <header>
-          <h3 onClick={this.handleClickVoted}>Voted</h3>
-          <h3 onClick={this.handleClickToBeVoted}>To be voted</h3>
-      </header>
-      <div>
       {this.state.voted &&
         <VotedProjects />
       }
@@ -44,10 +37,9 @@ class ProjectsNavBar extends React.Component {
         <ToBeVotedProjects />
       }
       </div>
-      </div>
     )
 
   }
 }
 
-export default ProjectsNavBar
+export default withRouter(ProjectsNavBar)

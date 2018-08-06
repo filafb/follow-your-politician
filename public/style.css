@@ -1,0 +1,10 @@
+body {
+  font-family: sans-serif;
+}
+
+.row{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-flow: row wrap;
+}
