@@ -1,12 +1,15 @@
 import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import Button from '@material-ui/core/Button';
+import { Dialog, DialogTitle, DialogContentText, DialogContent } from '@material-ui/core';
 
 const initialState = {
   yes: [],
   no: [],
   abstation: [],
   absent: [],
+  sent: false
 };
 
 class Voters extends React.Component {
@@ -63,27 +66,52 @@ class Voters extends React.Component {
     const response = await axios.post('/email', emailContent)
     if(response.status === 204){
       console.log('e-mail sent')
+      this.setState({sent: true})
     } else if((response.status === 500)){
       console.log('email not sent')
     }
 
   }
 
+  handlClose = () => {
+    this.setState({sent: false})
+  }
+
   render() {
     return (
+      <div className='voters-colunm'>
       <div>
       <h2>Voted Yes:</h2>
       {this.state.yes.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
-      <button name='yes' onClick={this.handleClick}>Support these votes</button>
+      <Button variant='contained' color='primary' name='yes' onClick={this.handleClick}>Support these votes</Button>
+      </div>
+      <div>
       <h2>Voted No:</h2>
       {this.state.no.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
-      <button name='no' onClick={this.handleClick}>Support these votes</button>
+      <Button variant='contained' color='primary' name='no' onClick={this.handleClick}>Support these votes</Button >
+      </div>
+      <div>
       <h2>Absent:</h2>
       {this.state.absent.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
-      <button name='absent' onClick={this.handleClick}>Support these votes</button>
+      <Button variant='contained' color='primary' name='absent' onClick={this.handleClick}>Support these votes</Button >
+      </div>
+      <div>
       <h2>Didn't vote:</h2>
       {this.state.abstation.map(deputy => (<li key={deputy.id}>{deputy.nome}</li>))}
-      <button name='abstation' onClick={this.handleClick}>Support these votes</button>
+      <Button variant='contained' color='primary' name='abstation' onClick={this.handleClick}>Support these votes</Button >
+      </div>
+      <Dialog
+      open={this.state.sent}
+      onClose={this.handlClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
+      <DialogTitle id='alert-dialog-title'>E-mail sent!</DialogTitle>
+      <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Thanks for supporting our democracy!
+            </DialogContentText>
+          </DialogContent>
+      </Dialog>
       </div>
     );
   }

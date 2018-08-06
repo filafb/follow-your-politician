@@ -42,7 +42,7 @@ function SimpleCard(props) {
             Alliance
           </Typography>}
           {alliance && allies.map(alley => {
-            return <Typography key={alley.id} component="spam"> {bull} {alley.shortName} </Typography>}
+            return <Typography key={alley.id} component="span"> {bull} {alley.shortName} </Typography>}
           )}
         </CardContent>
       </Card>
