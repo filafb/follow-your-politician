@@ -8,9 +8,7 @@ const Alliance = require('./models/alliance')
 //associtiations
 
 Alliance.hasMany(Party)
-Party.belongsTo(Alliance, {
-  targetKey: 'name'
-})
+Party.belongsTo(Alliance)
 
 
 module.exports = {

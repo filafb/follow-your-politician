@@ -2,10 +2,26 @@ const Sequelize = require('sequelize')
 const db = require('../database')
 
 const Party = db.define('party', {
-  generalId: Sequelize.INTEGER,
-  shortName: Sequelize.STRING,
-  name: Sequelize.STRING,
-  electoralNumber: Sequelize.INTEGER,
+  generalId: {
+    type: Sequelize.INTEGER,
+  },
+  shortName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+  name: {
+    type: Sequelize.STRING,
+  },
+  electoralNumber: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
   imageUrl: Sequelize.TEXT
 })
 
