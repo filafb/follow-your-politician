@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+  - node
+services:
+  - postgresql
+addons:
+  postgresql: '9.6'
+dist: trusty
+sudo: false
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+install:
+  - npm ci
+before_script:
+  - psql -c create database "follow-your-politician-test"; -U postgres
+before_deploy:
+  - npm run build-client
+  - rm - rf node_modules
+depoy:
+  skip_cleanup: true
+  provider: heroku
+  app: follow-your-politician
+  api_key:
+    secure: jqgFQTauUH4xdfH2rvKvrVMob2sl7PLZl6O5Y27mpRF2ZHVLoOlpfFVJtoqEhlSuywQkX3keJNifplbiWbLil60YCx1g3hcjef9FQ9/UxtoctBvmqCRkt6brBBHXKILcYI/MeiPQ7pQN+mYWsLC/PlPEQ4ydxMlkLKkzvyX7ZRS1uJyjMxqIYU8qiSkdDlg17qrDNmyEwgifb7WCGnAUaAmOMisD1utPyVPBQwAet35ZzsiOyvBFlaYBDAQC2YWHxu2IDT0TfKE1tYwcQUTve6EugoxfVNRlJ/QJELw3+MlIAmW9j6FsgVylNQChHNVMtFbo+2MhUzdDkux8GOSVwGpqyE8URNnpgkiWgCEB53h6DIOtn6Fj0eoF4qBO5OirAKxRisR0F/K1d+Qv0WvJB8yp+iO9H81pHzKJ7DVIxgUEflK++kiCFNxMvT7KagZLKx6WFDSXjBHmWvR+Gh7Bhf/oGflSOGdx1CNmV98nK022TmM0KBalojz4gRC9wboayqP4PlO9rhpD3PueoxJ92SDdlioMs22kEFm+Q40/m3LJy6OX5F5KcoGhkPf/0wagkePKblIyzwO/8CQbA6nKKA/p2GTFYb4+Me2QF0+PM2zXdJ11m2iy7iqQJQ88Zidzx3qjRZkqh3iQXO4TeVFBjTcr4Xnhz3W+uPRB1f6/pcE=
