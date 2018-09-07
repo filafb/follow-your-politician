@@ -14,7 +14,7 @@ notifications:
 install:
   - npm ci
 before_script:
-  - psql -c create database "follow-your-politician-test"; -U postgres
+  - psql -c 'create database "follow-your-politician-test";' -U postgres
 before_deploy:
   - npm run build-client
   - rm - rf node_modules
