@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./server/main.js",
+    "build-client": "webpack",
+    "build-client-watch": "webpack -w",
+    "deploy": "script/deploy",
     "start-dev": "NODE_ENV='development' webpack -w & nodemon ./server/main.js",
     "start-virtual": "webpack-dev-server",
     "test:server": "NODE_ENV='test' mocha tests/server-tests",
