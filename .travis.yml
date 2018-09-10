@@ -17,7 +17,7 @@ before_script:
   - psql -c 'create database "follow-your-politician-test";' -U postgres
 before_deploy:
   - npm run build-client
-  - rm - rf node_modules
+  - rm -rf node_modules
 deploy:
   skip_cleanup: true
   provider: heroku
