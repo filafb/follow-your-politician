@@ -18,7 +18,7 @@ before_script:
 before_deploy:
   - npm run build-client
   - rm - rf node_modules
-depoy:
+deploy:
   skip_cleanup: true
   provider: heroku
   app: follow-your-politician
