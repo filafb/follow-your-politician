@@ -13,11 +13,11 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PartyCard from './partyCard';
-import { states, stateNames } from './stateNames'
+import { states, stateNames } from './stateNames';
 
 const initialState = {
   electoralNumber: '',
-  state: ''
+  state: '',
 };
 
 const styles = theme => ({
@@ -25,14 +25,21 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     marginLeft: '50px',
+    marginTop: '20px',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    flexDirection: 'column',
+    textAlign: 'center'
+
+
   },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200,
+    width: '250px',
   },
   menu: {
-    width: 200,
+    width: '200px',
   },
 });
 
@@ -43,14 +50,20 @@ class MainPage extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  componentDidMount() {
+    let state = window.localStorage.getItem('state');
+    if (state) {
+      this.setState({ state });
+    }
+  }
+
   handleChange(event) {
-    console.log(event)
-    const { name, value } = event.target
+    const { name, value } = event.target;
     this.setState({
       [name]: value,
     });
-    if(name){
-      window.localStorage.setItem('state', value)
+    if (name) {
+      window.localStorage.setItem('state', value);
     }
   }
 
@@ -72,35 +85,41 @@ class MainPage extends React.Component {
     return (
       <div>
         <form className={classes.container} noValidate autoComplete="off">
-          <FormControl className={classes.FormControl}>
-            <InputLabel>Seu Estado</InputLabel>
-            <Select
-              value={this.state.state}
+          <div>
+            <FormControl className={classes.menu}>
+              <InputLabel>Seu Estado</InputLabel>
+              <Select
+                value={this.state.state}
+                onChange={this.handleChange}
+                name="state"
+                className={classes.selectEmpty}
+              >
+                <MenuItem value="">
+                  <em>-</em>
+                </MenuItem>
+                {stateNames.map(state => {
+                  return (
+                    <MenuItem key={state.initials} value={state.name}>
+                      {state.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          </div>
+          <div>
+            <TextField
+              id="with-placeholder"
+              label="Seu voto para deputado federal"
+              placeholder="Número do Candidato"
+              className={classes.textField}
+              margin="normal"
+              name="electoralNumber"
+              disabled={!this.state.state}
+              value={this.state.electoralNumber}
               onChange={this.handleChange}
-              name="state"
-              className={classes.selectEmpty}
-            >
-              <MenuItem value="">
-                <em>-</em>
-              </MenuItem>
-              {stateNames.map(state => {
-                return (
-                  <MenuItem key={state.initials}value={state.name}>{state.name}</MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
-          <TextField
-            id="with-placeholder"
-            label="Seu voto para deputado federal"
-            placeholder="Número do Candidato"
-            className={classes.textFiled}
-            margin="normal"
-            name="electoralNumber"
-            disabled={!this.state.state}
-            value={this.state.electoralNumber}
-            onChange={this.handleChange}
-          />
+            />
+          </div>
         </form>
         <div>
           {electoralNumber.length > 1 && (
