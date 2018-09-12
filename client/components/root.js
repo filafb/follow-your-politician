@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import MyPoliticians from './myPoliticians';
+import MainPage from './mainPage';
 import { loadParties } from '../reducers/partiesReducer';
-import { AppBar, Toolbar, Typography } from '@material-ui/core';
+import HeaderBar from './headerBar'
 
 class Root extends Component {
   componentDidMount() {
@@ -11,16 +11,14 @@ class Root extends Component {
   }
   render() {
     return (
-      <main>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="title" color="inherit">
-              Follow Your Politician
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <MyPoliticians />
-      </main>
+      <React.Fragment>
+        <HeaderBar />
+        <MainPage />
+        <main>
+          <Redirect to='/' />
+        </main>
+      </React.Fragment>
+
     );
   }
 }
