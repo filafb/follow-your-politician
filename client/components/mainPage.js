@@ -1,3 +1,4 @@
+import assert from 'assert';
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -13,11 +14,18 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PartyCard from './partyCard';
-import { states, stateNames } from './stateNames';
+import { stateNames } from './stateNames';
+import {
+  fetchCandidates,
+  getMyCandidates,
+} from '../reducers/candidatesReducer';
+import { getAlliances } from '../reducers/partiesReducer'
 
 const initialState = {
   electoralNumber: '',
   state: '',
+  errorMessage: '',
+  candidate: {},
 };
 
 const styles = theme => ({
@@ -29,9 +37,7 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'space-evenly',
     flexDirection: 'column',
-    textAlign: 'center'
-
-
+    textAlign: 'center',
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -54,6 +60,7 @@ class MainPage extends React.Component {
     let state = window.localStorage.getItem('state');
     if (state) {
       this.setState({ state });
+      this.props.fetchCandidates(state);
     }
   }
 
@@ -62,26 +69,52 @@ class MainPage extends React.Component {
     this.setState({
       [name]: value,
     });
-    if (name) {
+    if (name === 'state') {
       window.localStorage.setItem('state', value);
+      this.props.fetchCandidates(value);
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { candidates, parties, alliance } = this.props;
+    const { electoralNumber } = this.state;
+    let party, allianceName, myCandidates, getAlliance
+    if (prevState.electoralNumber !== electoralNumber) {
+      this.setState({candidate: {}})
+      if (electoralNumber.length === 2 && electoralNumber.substring(0, 2) !== prevState.electoralNumber) {
+        const partyNumber = Number(electoralNumber.substring(0, 2));
+        try {
+          party = parties.filter(party => party.partyNumber === partyNumber);
+          assert(party[0] !== undefined, 'Partido / Coligação não existe');
+          allianceName = party[0].alliance;
+          getAlliance = parties.filter(p => allianceName === p.alliance);
+          myCandidates = candidates.filter(candidate => {
+            return candidate.nomeColigacao === allianceName;
+          });
+          if(allianceName !== alliance.allianceName){
+            this.props.candDetailed(myCandidates, this.state.state);
+            this.props.getAlliances(allianceName, getAlliance)
+          }
+        } catch (err) {
+          this.setState({errorMessage: 'Partido Não Existente'})
+          console.log('err', err.message);
+        }
+      }
+      if (electoralNumber.length >= 4) {
+        const [candidate] = candidates.filter(
+          cand => Number(electoralNumber) === cand.numero
+        );
+        if (candidate.numero) {
+          this.setState({ candidate });
+        } else {
+          this.setState({ errorMessage: 'Candidato não encontrado' });
+        }
+      }
     }
   }
 
   render() {
-    const { electoralNumber } = this.state;
-    const { list, alliances, classes } = this.props;
-    const [votedFor] = list.filter(party => {
-      return party.electoralNumber === Number(electoralNumber.substring(0, 2));
-    });
-    let alliance, allies;
-    if (votedFor && votedFor.allianceId) {
-      [alliance] = alliances.filter(al => {
-        return al.id === votedFor.allianceId;
-      });
-      allies = list.filter(party => {
-        return party.allianceId === alliance.id;
-      });
-    }
+    const { classes } = this.props
     return (
       <div>
         <form className={classes.container} noValidate autoComplete="off">
@@ -115,6 +148,9 @@ class MainPage extends React.Component {
               className={classes.textField}
               margin="normal"
               name="electoralNumber"
+              inputProps={{
+                maxLength: 4,
+              }}
               disabled={!this.state.state}
               value={this.state.electoralNumber}
               onChange={this.handleChange}
@@ -122,7 +158,7 @@ class MainPage extends React.Component {
           </div>
         </form>
         <div>
-          {electoralNumber.length > 1 && (
+          {/* {electoralNumber.length > 1 && (
             <PartyCard
               votedFor={votedFor}
               alliance={alliance}
@@ -131,7 +167,7 @@ class MainPage extends React.Component {
           )}
           {electoralNumber.length > 1 && (
             <NavBar allies={allies} votedFor={votedFor} />
-          )}
+          )} */}
         </div>
       </div>
     );
@@ -139,10 +175,19 @@ class MainPage extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { list, alliances } = state.parties;
+  const { candidates, parties} = state;
   return {
-    list,
-    alliances,
+    candidates: candidates.listAll,
+    parties: parties.list,
+    alliance: parties.alliance
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchCandidates: state => dispatch(fetchCandidates(state)),
+    candDetailed: (list, state) => dispatch(getMyCandidates(list, state)),
+    getAlliances: (allianceName, list) => dispatch(getAlliances(allianceName, list))
   };
 };
 
@@ -151,5 +196,8 @@ MainPage.propTypes = {
 };
 
 export default withRouter(
-  connect(mapStateToProps)(withStyles(styles)(MainPage))
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(withStyles(styles)(MainPage))
 );
