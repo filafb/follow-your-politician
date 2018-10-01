@@ -2,6 +2,7 @@ import axios from 'axios'
 
 const LOAD_PARTIES = 'LOAD_PARTIES'
 const DEFINE_ALLIANCES = 'DEFINE_ALLIANCES'
+const CLEAN_ALLIANCE = 'CLEAN_ALLIANCE'
 
 const initialState = {
   list: [],
@@ -23,6 +24,12 @@ export const getAlliances = (allianceName, list) =>({
   }
 })
 
+export const cleanAlliance = () =>{
+  return{
+    type: CLEAN_ALLIANCE
+  }
+}
+
 // export const loadParties = () => {
 //   return async dispatch => {
 //     try{
@@ -43,6 +50,9 @@ const partiesReducer = (state = initialState, action) => {
 
     case DEFINE_ALLIANCES:
       return {...state, ...{alliance: action.alliance}}
+
+    case CLEAN_ALLIANCE:
+      return {...state, ...{alliance: {}}}
 
     default:
       return state

@@ -19,13 +19,13 @@ import {
   fetchCandidates,
   getMyCandidates,
 } from '../reducers/candidatesReducer';
-import { getAlliances } from '../reducers/partiesReducer'
+import { getAlliances, cleanAlliance } from '../reducers/partiesReducer'
+import PoliticianCard from './politicianCard';
 
 const initialState = {
   electoralNumber: '',
   state: '',
   errorMessage: '',
-  candidate: {},
 };
 
 const styles = theme => ({
@@ -68,10 +68,14 @@ class MainPage extends React.Component {
     const { name, value } = event.target;
     this.setState({
       [name]: value,
+      errorMessage: ""
     });
     if (name === 'state') {
       window.localStorage.setItem('state', value);
       this.props.fetchCandidates(value);
+    }
+    if(name === 'electoralNumber' && value.length < 2){
+      this.props.cleanAlliance()
     }
   }
 
@@ -104,9 +108,7 @@ class MainPage extends React.Component {
         const [candidate] = candidates.filter(
           cand => Number(electoralNumber) === cand.numero
         );
-        if (candidate.numero) {
-          this.setState({ candidate });
-        } else {
+        if (!candidate.numero) {
           this.setState({ errorMessage: 'Candidato não encontrado' });
         }
       }
@@ -158,14 +160,14 @@ class MainPage extends React.Component {
           </div>
         </form>
         <div>
-          {/* {electoralNumber.length > 1 && (
-            <PartyCard
-              votedFor={votedFor}
-              alliance={alliance}
-              allies={allies}
-            />
+          {this.state.electoralNumber.length > 1 && this.state.errorMessage === '' && (
+            <div>
+              <PartyCard />
+              <PoliticianCard electoralNumber={this.state.electoralNumber}/>
+            </div>
           )}
-          {electoralNumber.length > 1 && (
+
+          {/* {electoralNumber.length > 1 && (
             <NavBar allies={allies} votedFor={votedFor} />
           )} */}
         </div>
@@ -187,7 +189,8 @@ const mapDispatchToProps = dispatch => {
   return {
     fetchCandidates: state => dispatch(fetchCandidates(state)),
     candDetailed: (list, state) => dispatch(getMyCandidates(list, state)),
-    getAlliances: (allianceName, list) => dispatch(getAlliances(allianceName, list))
+    getAlliances: (allianceName, list) => dispatch(getAlliances(allianceName, list)),
+    cleanAlliance: () => dispatch(cleanAlliance())
   };
 };
 

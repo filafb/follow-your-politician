@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import { connect } from 'react-redux'
 
 const styles = {
   card: {
@@ -25,24 +26,24 @@ const styles = {
 };
 
 function SimpleCard(props) {
-  const { classes, votedFor, alliance, allies } = props;
+  const { classes, alliance } = props;
   const bull = <span className={classes.bullet}>•</span>;
-
+  console.log(alliance)
   return (
     <div>
       <Card className={classes.card}>
         <CardContent>
           <Typography className={classes.title} color="textSecondary">
-            Party you voted for:
+            Sua coligação:
           </Typography>
           <Typography variant="headline" component="h2">
-          {`${votedFor.shortName} - ${votedFor.name}`}
+          {`${alliance.allianceName}`}
           </Typography>
-          {alliance && <Typography className={classes.pos} color="textSecondary">
-            Alliance
-          </Typography>}
-          {alliance && allies.map(alley => {
-            return <Typography key={alley.id} component="span"> {bull} {alley.shortName} </Typography>}
+          <Typography className={classes.pos} color="textSecondary">
+            Partidos:
+          </Typography>
+          {alliance.list && alliance.list.map(alley => {
+            return <Typography key={alley.partyNumber} component="span"> {bull} {alley.partyName} </Typography>}
           )}
         </CardContent>
       </Card>
@@ -54,4 +55,11 @@ SimpleCard.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SimpleCard);
+const mapStateToProps = state => {
+  const { parties } = state
+  return {
+    alliance: parties.alliance
+  }
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(SimpleCard));

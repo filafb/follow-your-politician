@@ -5,6 +5,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import { connect } from 'react-redux';
 
 const styles = {
   card: {
@@ -13,40 +14,71 @@ const styles = {
     margin: '10px',
     display: 'flex',
     justifyContent: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   avatar: {
     width: 60,
     height: 60,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
-  name:{
-    alignSelf: 'center'
+  name: {
+    alignSelf: 'center',
   },
   boxName: {
     display: 'flex',
-    flexDirection: 'column'
-  }
-
+    flexDirection: 'column',
+  },
 };
 
 function PoliticianCard(props) {
-  const { classes, deputy } = props;
+  let { classes, electoralNumber, candidates } = props;
+  let hasCandidate = false;
+  if (electoralNumber.length === 4) {
+    let number = Number(electoralNumber);
+    hasCandidate = true;
+    candidates = [
+      ...candidates.filter(cand => cand.numero === number),
+      ...candidates.filter(cand => cand.numero !== number),
+    ];
+  }
+  console.log(candidates);
   return (
     <div>
-      <Card className={classes.card}>
-        <Avatar
-          className={classes.avatar}
-          src={deputy.urlFoto}
-          alt={deputy.nome}
-        />
-        <CardContent className={classes.boxName}>
-          <Typography gutterBottom variant="headline" component="h4" className={classes.name} >
-            {deputy.nome}
-          </Typography>
-          <Typography component="p" className={classes.name}>Party: {deputy.siglaPartido}</Typography>
-        </CardContent>
-      </Card>
+      {candidates.map((candidate, idx) => {
+        return (
+          <Card className={classes.card} key={candidate.id}>
+            <Typography
+                gutterBottom
+                variant="headline"
+                component="h3"
+                className={classes.name}
+              >
+              {hasCandidate && idx === 0 && 'Seu Candidato:'}
+              </Typography>
+            <Avatar
+              className={classes.avatar}
+              src={candidate.fotoUrl}
+              alt={candidate.nomeUrna}
+            />
+            <CardContent className={classes.boxName}>
+              <Typography
+                gutterBottom
+                variant="headline"
+                component="h4"
+                className={classes.name}
+              >
+                {candidate.nomeUrna}
+              </Typography>
+              <Typography component="p" className={classes.name}>
+                Partido: {candidate.partido.sigla}
+              </Typography>
+              <Typography component="p" className={classes.name}>
+                Reeleição: {candidate.st_REELEICAO ? 'Sim' : 'Não'}
+              </Typography>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -55,4 +87,11 @@ PoliticianCard.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(PoliticianCard);
+const mapStateToProps = state => {
+  const { candidates } = state;
+  return {
+    candidates: candidates.filtered,
+  };
+};
+
+export default connect(mapStateToProps)(withStyles(styles)(PoliticianCard));
