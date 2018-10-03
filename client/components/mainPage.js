@@ -10,7 +10,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText,
+  FormHelperText, Dialog, DialogTitle, DialogContentText, DialogContent
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import PartyCard from './partyCard';
@@ -18,42 +18,26 @@ import { stateNames } from './stateNames';
 import {
   fetchCandidates,
   getMyCandidates,
+  getError
 } from '../reducers/candidatesReducer';
 import { getAlliances, cleanAlliance } from '../reducers/partiesReducer'
 import PoliticianCard from './politicianCard';
+import {styles} from './styling'
 
 const initialState = {
   electoralNumber: '',
   state: '',
   errorMessage: '',
+  invalidVote: false
 };
-
-const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    marginLeft: '50px',
-    marginTop: '20px',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    flexDirection: 'column',
-    textAlign: 'center',
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: '250px',
-  },
-  menu: {
-    width: '200px',
-  },
-});
 
 class MainPage extends React.Component {
   constructor() {
     super();
     this.state = initialState;
     this.handleChange = this.handleChange.bind(this);
+    this.invalidVote = this.invalidVote.bind(this);
+    this.handleClose = this.handleClose.bind(this)
   }
 
   componentDidMount() {
@@ -68,11 +52,13 @@ class MainPage extends React.Component {
     const { name, value } = event.target;
     this.setState({
       [name]: value,
-      errorMessage: ""
+      errorMessage: "",
+      invalidVote: false
     });
     if (name === 'state') {
       window.localStorage.setItem('state', value);
       this.props.fetchCandidates(value);
+      this.setState({electoralNumber: ''})
     }
     if(name === 'electoralNumber' && value.length < 2){
       this.props.cleanAlliance()
@@ -105,19 +91,32 @@ class MainPage extends React.Component {
         }
       }
       if (electoralNumber.length >= 4) {
-        const [candidate] = candidates.filter(
+        const candidate = candidates.filter(
           cand => Number(electoralNumber) === cand.numero
         );
-        if (!candidate.numero) {
+        if (!candidate.length) {
           this.setState({ errorMessage: 'Candidato não encontrado' });
         }
       }
     }
   }
 
+  invalidVote(){
+    this.setState({invalidVote: true})
+  }
+
+  handleClose(){
+    this.setState(
+      {errorMessage: '',
+      electoralNumber: ""
+  })
+  }
+
   render() {
-    const { classes } = this.props
+    const { classes, isFetching, error } = this.props
     return (
+      <div className={classes.main}>
+      {isFetching === 'all' && <div className={`loader ${classes.container}`}/> }
       <div>
         <form className={classes.container} noValidate autoComplete="off">
           <div>
@@ -153,17 +152,17 @@ class MainPage extends React.Component {
               inputProps={{
                 maxLength: 4,
               }}
-              disabled={!this.state.state}
+              disabled={!this.state.state || isFetching === 'all'}
               value={this.state.electoralNumber}
               onChange={this.handleChange}
             />
           </div>
         </form>
-        <div>
-          {this.state.electoralNumber.length > 1 && this.state.errorMessage === '' && (
+        <div>{
+          this.state.electoralNumber.length > 1 && this.state.errorMessage === '' && (
             <div>
               <PartyCard />
-              <PoliticianCard electoralNumber={this.state.electoralNumber}/>
+              <PoliticianCard electoralNumber={this.state.electoralNumber} invalidVote={this.invalidVote}/>
             </div>
           )}
 
@@ -171,6 +170,21 @@ class MainPage extends React.Component {
             <NavBar allies={allies} votedFor={votedFor} />
           )} */}
         </div>
+      </div>
+      <Dialog
+      open={!!this.state.errorMessage || !!error}
+      onClose={this.handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
+      <DialogTitle id='alert-dialog-title'>
+      {this.state.errorMessage ? this.state.errorMessage : 'Erro na rede'}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id='alert-dialog-description'>
+        {this.state.errorMessage ? 'Seu voto será considerado inválido' : error}
+        </DialogContentText>
+      </DialogContent>
+      </Dialog>
       </div>
     );
   }
@@ -181,7 +195,9 @@ const mapStateToProps = state => {
   return {
     candidates: candidates.listAll,
     parties: parties.list,
-    alliance: parties.alliance
+    alliance: parties.alliance,
+    isFetching: candidates.isFetching,
+    error: candidates.errorMessage
   };
 };
 
@@ -190,7 +206,8 @@ const mapDispatchToProps = dispatch => {
     fetchCandidates: state => dispatch(fetchCandidates(state)),
     candDetailed: (list, state) => dispatch(getMyCandidates(list, state)),
     getAlliances: (allianceName, list) => dispatch(getAlliances(allianceName, list)),
-    cleanAlliance: () => dispatch(cleanAlliance())
+    cleanAlliance: () => dispatch(cleanAlliance()),
+    clearError: message => dispatch(getError(message))
   };
 };
 

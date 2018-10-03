@@ -58,7 +58,7 @@ SimpleCard.propTypes = {
 const mapStateToProps = state => {
   const { parties } = state
   return {
-    alliance: parties.alliance
+    alliance: parties.alliance,
   }
 }
 

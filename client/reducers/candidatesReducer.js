@@ -5,9 +5,14 @@ import { loadedParties } from './partiesReducer'
 
 const FETCH_CANDIDATES = 'FETCH_CANDIDATES'
 const GET_MY_CANDIDATES = 'GET_MY_CANDIDATES'
+const FETCHING = 'FETCHING'
+const ERROR = 'ERROR'
+
 const initialState = {
   listAll: [],
   filtered: [],
+  isFetching: false,
+  errorMessage: ''
 }
 
 const fetchedCandidates = listAll => ({
@@ -20,9 +25,20 @@ const gottenMyCandidates = MyList => ({
   MyList
 })
 
+const fetching = message => ({
+  type: FETCHING,
+  message
+})
+
+const getError = message => ({
+  type: ERROR,
+  message
+})
+
 export const fetchCandidates = state => {
   return async dispatch => {
     try{
+      dispatch(fetching('all'))
       const [stateFiltered] = stateNames.filter(st => st.name === state)
       const api = getCandidates(stateFiltered.initials)
       const { data } = await axios.get(api)
@@ -34,7 +50,7 @@ export const fetchCandidates = state => {
       dispatch(loadedParties(parties))
     }
     catch (err){
-      console.log(err)
+      dispatch(getError('Erro de network. Atualize a página'))
     }
   }
 }
@@ -42,6 +58,7 @@ export const fetchCandidates = state => {
 export const getMyCandidates = (list, state) => {
   return async dispatch => {
     try{
+      dispatch(fetching('mine'))
       const [stateFiltered] = stateNames.filter(st => st.name === state)
       const links = filterMyCandidates(list, stateFiltered.initials)
       const candDetailed = links.map(link => {
@@ -54,7 +71,7 @@ export const getMyCandidates = (list, state) => {
       console.log(candidates)
       dispatch(gottenMyCandidates(candidates))
     } catch (err){
-      console.log(err)
+      dispatch(getError('Erro de network. Atualize a página'))
     }
   }
 }
@@ -62,10 +79,16 @@ export const getMyCandidates = (list, state) => {
 const candidatesReducer = (state = initialState, action) => {
   switch (action.type){
     case FETCH_CANDIDATES:
-      return {...state, ...{listAll: action.listAll}}
+      return {...state, listAll: action.listAll, isFetching: false}
 
     case GET_MY_CANDIDATES:
-      return {...state, ...{filtered: action.MyList}}
+      return {...state, filtered: action.MyList, isFetching: false}
+
+    case FETCHING:
+      return {...state, isFetching: action.message}
+
+    case ERROR:
+      return {...state, errorMessage: action.message}
 
     default:
       return state

@@ -28,14 +28,18 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
   },
+  grid: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  }
 };
 
 function PoliticianCard(props) {
-  let { classes, electoralNumber, candidates } = props;
+  let { classes, electoralNumber, candidates, invalidVote, isFetching} = props;
   let hasCandidate = false;
   if (electoralNumber.length === 4) {
     let number = Number(electoralNumber);
-    hasCandidate = true;
+    hasCandidate = candidates.find(el => el.numero === number) ? true : invalidVote();
     candidates = [
       ...candidates.filter(cand => cand.numero === number),
       ...candidates.filter(cand => cand.numero !== number),
@@ -43,14 +47,14 @@ function PoliticianCard(props) {
   }
   console.log(candidates);
   return (
-    <div>
-      {candidates.map((candidate, idx) => {
+    <div className={classes.grid}>
+      {isFetching === 'mine' ? <div className='loader'/>: candidates.map((candidate, idx) => {
         return (
           <Card className={classes.card} key={candidate.id}>
             <Typography
                 gutterBottom
                 variant="headline"
-                component="h3"
+                //component="h3"
                 className={classes.name}
               >
               {hasCandidate && idx === 0 && 'Seu Candidato:'}
@@ -78,7 +82,8 @@ function PoliticianCard(props) {
             </CardContent>
           </Card>
         );
-      })}
+      })
+    }
     </div>
   );
 }
@@ -91,6 +96,7 @@ const mapStateToProps = state => {
   const { candidates } = state;
   return {
     candidates: candidates.filtered,
+    isFetching: candidates.isFetching
   };
 };
 
